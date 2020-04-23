@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<project name="AntJenkins" default="dist" basedir=".">
+	   <description>
+	       simple example build file
+	   </description>
+	 <property name="src" location="${basedir}/src"/>
+	 <property name="build" location="${basedir}/build"/>
+	 <property name="dist"  location="${basedir}/dist"/>
+	 <property name="selenium.jars" value="C:\Librerias64"/>
+	
+						
+	<target name="setClassPath" unless="test.classpath">
+	    <path id="classpath_jars">
+ 			<fileset dir="${selenium.jars}" includes="*.jar"/>
+		</path>
+		<pathconvert refid="classpath_jars" property="test.classpath" pathsep=":"/>
+	</target>	
+	 
+	 <target name="clean" description="clean up" >
+	   <delete dir="${build}"/>
+	   <delete dir="${dist}"/>
+	 </target>	
+
+		<target name="dist" depends="compile" description="generate the distribution" >
+			   <mkdir dir="${dist}/lib"/>
+			  <jar destfile="${dist}/lib/AntJenkins.jar" basedir="${build}">
+			  </jar>	
+			</target>	
+		
+	<target name="init" depends="setClassPath,clean">
+	   <mkdir dir="${build}"/>
+	   <mkdir dir="${dist}/lib"/>	
+	 </target>
+		
+		
+  <!-- Esta parte si funciona sin los jars -->
+	 <target name="compile" depends="init" description="compile the source " >
+	   <javac classpath = "${test.classpath}" srcdir="${src}" destdir="${build}"/>
+	 	 <jar destfile="${dist}/lib/AntJenkins.jar" basedir="${build}">	
+	 	<manifest>				
+	 		<attribute name="Main-Class" value="Ant.LoadPage"/>  
+	 	</manifest>			
+	 	</jar>
+	 </target >
+		
+	<!--target name="run" depends="compile">
+		<testng outputdir="${build}" classpathref="classpath.test" >
+		    <xmlfileset dir="${src}" includes="testng.xml"/>
+    	</testng>
+	</target-->	
+
+		
+	<target name="run" depends="compile">								
+			<!--java tag will execute main function from the jar created in compile target section-->	
+	   <java jar="${dist}/lib/AntJenkins.jar" fork="true"/>			
+	</target>		
+</project>
